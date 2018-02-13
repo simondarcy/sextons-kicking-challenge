@@ -68,7 +68,7 @@ var Preloader = {
         loadingText.setText("Loading ...");
     },
     loadComplete : function(){
-        game.state.start('Game');
+        game.state.start('Splash');
     },
     fileComplete : function(progress, cacheKey, success, totalLoaded, totalFiles){
         loadingText.setText("Loading: " + progress + "%");
