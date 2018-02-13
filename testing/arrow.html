@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Tanks - Part 1</title>
+    <meta charset="utf-8">
+    <script src="../assets/js/phaser.min.js"></script>
+</head>
+<body>
+
+    <div id="game"></div>
+
+    <script type="text/javascript">
+        window.onload = function()
+        {
+            var game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, '', {
+                preload: preload,
+                create: create,
+                update: update
+            });
+
+            var dragging = false;
+
+            function preload ()
+            {
+                game.input.maxPointers = 1;
+                game.load.image('logo', 'arrow.png');
+            }
+
+            function create ()
+            {
+                logo = game.add.sprite(game.world.centerX, game.world.centerY, 'logo');
+                logo.angle = -180;
+                logo.anchor.setTo(0.5, 0.5);
+
+            }
+
+            function update()
+            {
+                var targetAngle = (360 / (2 * Math.PI)) * game.math.angleBetween(
+                                logo.x, logo.y,
+                                this.game.input.activePointer.x, this.game.input.activePointer.y) + 90;
+
+                if(targetAngle < 0)
+                    targetAngle += 360;
+
+                if(game.input.activePointer.isDown && !dragging)
+                {
+                    dragging = true;
+                }
+                if(!game.input.activePointer.isDown && dragging)
+                {
+                    dragging = false;
+                }
+
+                if(dragging)
+                {
+                    logo.angle = targetAngle;
+                }
+            }
+        };
+
+
+    </script>
+
+</body>
+</html>
