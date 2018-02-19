@@ -37,6 +37,7 @@ var Preloader = {
 
         //Main Game Assets
         game.load.image('tank', 'assets/img/body-1.png');
+        game.load.spritesheet('player', 'assets/img/johnny-sexton-master.png', 215, 357, 3);
         game.load.image('ball', 'assets/img/ball.png');
         game.load.image('background', 'assets/img/background.png');
         game.load.image('target', 'assets/img/target-2.png');

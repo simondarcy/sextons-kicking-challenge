@@ -34,9 +34,17 @@ var Game = {
         this.ball.body.bounce.set(0.8);
         this.ball.body.velocity.set(0, 200);
 
-        //  The body of the tank
-        this.tank = this.add.sprite(24, 300, 'tank');
+        //Our player
+        this.tank = game.add.sprite(50, 300, 'player');
         this.tank.scale.set(0.4);
+        this.tank.frame = 1;
+
+
+        //a static ball to for initial
+
+        this.staticBall = this.add.sprite((this.tank.x + this.tank.width)-20, (this.tank.y + this.tank.height)-35, 'ball');
+        this.staticBall.scale.set(0.4);
+
         //  Used to display the power of the shot
         this.power = 0;
         this.powerText = this.add.text(w/2, 20, '0', { font: "18px Arial", fill: "#ffffff" });
@@ -133,12 +141,14 @@ var Game = {
 
     createBall:function(){
         _audio_kick.play();
-        this.ball.x = this.tank.x;
-        this.ball.y = this.tank.y;
+        this.ball.x = this.staticBall.x;
+        this.ball.y = this.staticBall.y;
+        this.staticBall.alpha = 0;
         this.ball.angle = 45;
         this.ball.exists = true;
         this.camera.follow(this.ball);
     },
+
 
 
     /**
@@ -174,6 +184,8 @@ var Game = {
     removeBall: function () {
         //Adding this here more for UX purposes
         this.instructionText.alpha = 0;
+        this.staticBall.alpha = 1;
+        this.tank.frame = 1;
         this.ball.x = this.tank.x;
         this.ball.y = this.tank.y;
         this.camera.follow();
@@ -182,7 +194,6 @@ var Game = {
         cameraTween = this.add.tween(this.camera).to( { x: 0 }, tweenTime, "Quint", true, tweenTime);
 
         cameraTween.onComplete.addOnce(function () {
-
             if(this.lifeLost) {
                 if(this.lives == 1){
                     this.instructionText.alpha = 1;
@@ -234,6 +245,7 @@ var Game = {
                 if (!this.dragStart) {
                     this.createArrow();
                     this.dragStart = true;
+                    this.tank.frame = 0;
                 }
                 this.sprite.rotation = game.physics.arcade.angleToPointer(this.sprite);
                 this.guide.fromSprite(this.sprite, this.game.input.activePointer, false);
@@ -246,10 +258,11 @@ var Game = {
                 this.dragStart = false;
                 this.removeArrow();
                 if(dis<30) {//prevent accidental taps ben counted
+                    this.tank.frame = 1;
                     return;
                 }
-
                 this.canShoot = false;
+                this.tank.frame = 2;
                 this.createBall();
                 _audio_kick.play();
                 if(dis<120)dis = 120; //Have a minimum
