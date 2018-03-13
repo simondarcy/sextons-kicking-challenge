@@ -7,17 +7,13 @@ var Game = {
         this.game.world.setBounds(0, 0, 992, 480);
     },
     preload: function () {
-
-
     },
-
     create: function () {
-
-
 
         //  Simple but pretty background
         this.background = this.add.sprite(0, 0, 'background');
 
+        //Reset defaults
         this.guide = null;
         this.score = 0;
         this.lives = 3;
@@ -25,12 +21,11 @@ var Game = {
         this.lifeLost = false;
         this.canShoot = true;
 
-        //  A single ball that the tank will fire
+        // The  ball that our player will kick
         this.ball = this.add.sprite(0, 0, 'ball');
         this.ball.scale.set(0.5);
         this.ball.exists = false;
         this.physics.arcade.enable(this.ball);
-
         this.ball.body.bounce.set(0.8);
         this.ball.body.velocity.set(0, 200);
 
@@ -39,11 +34,16 @@ var Game = {
         this.tank.scale.set(0.4);
         this.tank.frame = 1;
 
-
-        //a static ball to for initial
-
+        //a static ball that is in view initially
         this.staticBall = this.add.sprite((this.tank.x + this.tank.width)-20, (this.tank.y + this.tank.height)-35, 'ball');
         this.staticBall.scale.set(0.4);
+
+        //create a shadow on the ground for the ball
+        this.shadow = this.add.sprite((this.tank.x + this.tank.width), (this.tank.y + this.tank.height)+ 30, 'shadow');
+        this.shadow.alpha = 0.5;
+        this.shadow.scale.set(0.5);
+        this.shadow.anchor.set(0.5);
+        this.shadow.exists = false;
 
         //  Used to display the power of the shot
         this.power = 0;
@@ -53,19 +53,23 @@ var Game = {
         this.powerText.setShadow(1, 1, 'rgba(0, 0, 0, 0.8)', 1);
         this.powerText.fixedToCamera = true;
         this.createTarget();
-        //set up camera at other end of pitch
+
+        //set up camera at other end of pitch initially
         this.camera.x = 900;
         this.add.tween(this.camera).to( { x: 0 }, 1000, "Quint", true, 1000);
-        this.instructionText = this.add.text(w/2, h-50, 'Tap & Drag to shoot', { font: "18px Press Start 2P", fill: "#000000" });
+
+        //Initial instructions
+        this.instructionText = this.add.text(w/2, h-settings.tipOffset, 'Tap & Drag to shoot', { font: settings.tipFont, fill: "#000000" });
         this.instructionText.anchor.set(0.5);
         this.instructionText.font = 'Press Start 2P';
         this.instructionText.alpha = 1;
 
+        //Create 3 'lives'
         this.createLifeBalls();
 
-        //add text
+        //add score text
         textStyle = {
-            font: '72px Press Start 2P',
+            font: '40px Press Start 2P',
             fill: '#ffff00',
             align: 'center',
             boundsAlignH: "center",
@@ -84,13 +88,9 @@ var Game = {
         _audio_reset = game.add.audio('reset');
         _audio_crash = game.add.audio('crash');
         _audio_start.play();
-
-
-
-
-
     },
     createLifeBalls:function(){
+        //create 3 balls at top of screen to represent remaining lives
         this.balls = this.add.group(this.game.world, 'balls', false, true, Phaser.Physics.ARCADE);
 
         //this.balls.anchor.set(0.5);
@@ -137,8 +137,6 @@ var Game = {
         var dy = y1 - y2;
         return Math.sqrt(dx * dx + dy * dy);
     },
-
-
     createBall:function(){
         _audio_kick.play();
         this.ball.x = this.staticBall.x;
@@ -147,22 +145,23 @@ var Game = {
         this.ball.angle = 45;
         this.ball.exists = true;
         this.camera.follow(this.ball);
+        this.shadow.exists = true;
+        this.shadow.x = this.ball.x;
     },
 
 
 
-    /**
-     * Called by physics.arcade.overlap if the ball and a target overlap
-     *
-     * @method hitTarget
-     * @param {Phaser.Sprite} ball - A reference to the ball (same as this.ball)
-     * @param {Phaser.Sprite} target - The target the ball hit
-     */
     hitTarget: function (ball, target) {
         this.removeBall();
         _audio_hit.play();
+
+        //increase score
         this.score++;
+
+        //animate score
         this.scoreText.setText(this.score);
+        this.scoreText.x = target.x;
+        this.scoreText.y = target.y + 50;
         this.scoreText.alpha = 1;
         this.scoreTween = game.add.tween(this.scoreText).to({alpha: 0}, 500, Phaser.Easing.Linear.None, true);
 
@@ -190,15 +189,25 @@ var Game = {
         this.ball.y = this.tank.y;
         this.camera.follow();
         this.ball.exists =  false;
+        this.shadow.exists = false;
         tweenTime = (game.camera.x>0)?1000:0; //If ball doesn't leave screen, no point waiting around;
         cameraTween = this.add.tween(this.camera).to( { x: 0 }, tweenTime, "Quint", true, tweenTime);
 
+        if(this.lifeLost && this.lives == 0){
+            this.tank.frame = 3;
+        }
+
         cameraTween.onComplete.addOnce(function () {
             if(this.lifeLost) {
+                if(this.lives == 2 && this.score ==0){
+                    this.instructionText.alpha = 1;
+                    this.instructionText.fill = '#FFFF00';
+                    this.instructionText.setText('Try use entire screen?');
+                }
                 if(this.lives == 1){
                     this.instructionText.alpha = 1;
                     this.instructionText.fill = '#FFFF00';
-                    this.instructionText.setText('Last life');
+                    this.instructionText.setText('One  ball remaining');
                 }
                 if (this.lives == 0) {
                     _audio_gameover.play();
@@ -206,7 +215,6 @@ var Game = {
                 }
                 else {
                     //lives.last blink kill
-                    console.log('lose life');
                     this.balls.children[0].destroy();
                 }
                 this.lives--;
@@ -228,8 +236,8 @@ var Game = {
         if ( this.ball.exists && ( this.ball.y > 420|| this.ball.x > game.world.bounds.width) )
         {
             //  Simple check to see if it's fallen too low
-            this.removeBall();
             this.lifeLost=true;
+            this.removeBall();
             _audio_crash.play();
         }
         else
@@ -270,6 +278,11 @@ var Game = {
 
             }
         }//end can shoot
+
+
+        this.shadow.x = this.ball.x;
+        shadowScale =  Math.round(10 - (Math.abs(this.ball.y-this.shadow.y)/100) ) ;
+        this.shadow.scale.set(shadowScale/10)
 
     },
     render:function() {

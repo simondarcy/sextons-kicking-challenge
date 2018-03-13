@@ -37,11 +37,15 @@ var Preloader = {
 
         //Main Game Assets
         game.load.image('tank', 'assets/img/body-1.png');
-        game.load.spritesheet('player', 'assets/img/johnny-sexton-master.png', 215, 357, 3);
+        game.load.spritesheet('player', 'assets/img/johnny-sexton-master-no-logo.png?v1.5', 215, 357, 4);
         game.load.image('ball', 'assets/img/ball.png');
         game.load.image('background', 'assets/img/background.png');
         game.load.image('target', 'assets/img/target-2.png');
         game.load.image('arrow', 'assets/img/arrow.png');
+        game.load.image('shadow', 'assets/img/shadow.png');
+        game.load.image('logo', 'assets/img/logo.png');
+        game.load.image('stadium', 'assets/img/bg_stadium.png?v=1');
+        game.load.image('guide-image', 'assets/img/guide.png?v=1');
 
         //audio
         game.load.audio('start', ['assets/audio/start.mp3']);
@@ -50,6 +54,11 @@ var Preloader = {
         game.load.audio('reset', ['assets/audio/reset.mp3']);
         game.load.audio('gameover', ['assets/audio/gameover.mp3']);
         game.load.audio('crash', ['assets/audio/crash.mp3']);
+
+        game.load.image('facebook', 'assets/img/share_facebook.png');
+        game.load.image('twitter', 'assets/img/share_twitter.png');
+        game.load.image('link', 'assets/img/share_link.png');
+        game.load.image('whatsapp', 'assets/img/share_whatsapp.png');
 
 
         textStyle = {

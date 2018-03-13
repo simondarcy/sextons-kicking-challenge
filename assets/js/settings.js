@@ -1,15 +1,35 @@
 var mobileSettings = {
-    splashNameTop:45,
-    splashJohnnyScale:0.8,
-    splashTitleOffset:130,
-    isMobile:true
+    splashNameTop:50,
+    splashJohnnyScale:0.75,
+    johnnyOffset:10,
+    splashTitleOffset:100,
+    isMobile:true,
+    actionText:'Tap to play',
+    instructionsFont:'16px Press Start 2P',
+    instructionsOffset:20,
+    instructionsText:'Tap and drag\nto increase power.\nRelease to shoot',
+    guideTween:{x:50,y:380},
+    tipFont:'16px Press Start 2P',
+    tipOffset:50
+
 };
 
 var desktopSettings = {
-    splashNameTop:25,
-    splashJohnnyScale:0.7,
+    splashNameTop:40,
+    splashJohnnyScale:0.6,
+    johnnyOffset:20,
     splashTitleOffset:100,
-    isMobile:false};
+    isMobile:false,
+    actionText:'Click to play',
+    instructionsFont:'16px Press Start 2P',
+    instructionsOffset:40,
+    instructionsText:'Click and drag mouse to increase power.\nRelease to shoot',
+    guideTween:{x:160,y:360},
+    tipFont:'18px Press Start 2P',
+    tipOffset:20
+};
+
+var shareURL = "http://www.simondarcyonline.com/sexton/";
 
 //Mobile First
 var settings = mobileSettings;
